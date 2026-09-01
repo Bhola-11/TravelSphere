@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Terms & Conditions — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="bg-dark text-white py-5" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+    <div class="container py-4 text-center">
+        <h1 class="display-5 fw-extrabold mb-2">Terms & Conditions</h1>
+        <p class="lead text-light-50 mb-0" style="color: #94a3b8;">User Agreement and Booking Policies for TravelSphere Platform</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <h5 class="fw-bold text-dark mb-3">1. Acceptance of Terms</h5>
+                <p class="text-secondary leading-relaxed mb-4">
+                    By accessing and using TravelSphere, you agree to be bound by these Terms and Conditions and all applicable laws and regulations. If you do not agree, you are prohibited from using or accessing this site.
+                </p>
+
+                <h5 class="fw-bold text-dark mb-3">2. Booking & Reservations</h5>
+                <p class="text-secondary leading-relaxed mb-4">
+                    All reservations made through TravelSphere are subject to availability and supplier confirmation. Prices listed include applicable taxes unless specifically noted otherwise during checkout.
+                </p>
+
+                <h5 class="fw-bold text-dark mb-3">3. Cancellation & Refunds</h5>
+                <p class="text-secondary leading-relaxed mb-4">
+                    Cancellations must be requested via your customer portal. Refund eligibility depends on the supplier-specific policy and lead time before departure.
+                </p>
+
+                <h5 class="fw-bold text-dark mb-3">4. Intellectual Property</h5>
+                <p class="text-secondary leading-relaxed mb-0">
+                    All proprietary logos, content, 3D assets, and domain engines are the intellectual property of TravelSphere.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

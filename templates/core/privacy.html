@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Privacy Policy — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="bg-dark text-white py-5" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+    <div class="container py-4 text-center">
+        <h1 class="display-5 fw-extrabold mb-2">Privacy Policy</h1>
+        <p class="lead text-light-50 mb-0" style="color: #94a3b8;">How We Protect Your Personal Information & Travel Data</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <h5 class="fw-bold text-dark mb-3">1. Information We Collect</h5>
+                <p class="text-secondary leading-relaxed mb-4">
+                    We collect personal information necessary to fulfill travel bookings, including names, contact details, payment information, and passport data for international manifest clearance.
+                </p>
+
+                <h5 class="fw-bold text-dark mb-3">2. Data Security & Encryption</h5>
+                <p class="text-secondary leading-relaxed mb-4">
+                    All payment transactions are encrypted using 256-bit SSL protocols. We do not store raw card security codes (CVV) on our servers.
+                </p>
+
+                <h5 class="fw-bold text-dark mb-3">3. GDPR & Cookie Preferences</h5>
+                <p class="text-secondary leading-relaxed mb-0">
+                    You have the right to request access to, correction of, or deletion of your personal data at any time through your Profile dashboard.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

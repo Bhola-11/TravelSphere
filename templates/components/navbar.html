@@ -1,0 +1,414 @@
+<!-- Clean Professional Enterprise Navbar (Single-Line, Zero Overflow) -->
+<style>
+    .ts-navbar {
+        background: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        position: sticky;
+        top: 0;
+        z-index: 1050;
+        height: 70px;
+    }
+
+    .ts-nav-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+    }
+
+    /* Brand Logo */
+    .ts-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        text-decoration: none;
+        color: #0f172a;
+        font-weight: 800;
+        font-size: 1.25rem;
+        letter-spacing: -0.02em;
+        flex-shrink: 0;
+    }
+
+    .ts-brand-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+    }
+
+    .ts-brand span {
+        color: #2563eb;
+    }
+
+    /* Navigation Links */
+    .ts-menu {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        flex-wrap: nowrap;
+    }
+
+    .ts-link {
+        color: #475569;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        padding: 0.45rem 0.85rem;
+        border-radius: 8px;
+        transition: all 0.15s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        white-space: nowrap;
+    }
+
+    .ts-link:hover {
+        color: #2563eb;
+        background: #f8fafc;
+    }
+
+    .ts-link.active {
+        color: #2563eb;
+        background: #eff6ff;
+        font-weight: 700;
+    }
+
+    .ts-link.ai-badge {
+        color: #4f46e5;
+        background: #eef2ff;
+        border: 1px solid #e0e7ff;
+    }
+
+    .ts-link.ai-badge:hover {
+        background: #e0e7ff;
+    }
+
+    /* Right Action Elements */
+    .ts-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-shrink: 0;
+        flex-wrap: nowrap !important;
+    }
+
+    /* Currency Dropdown */
+    .ts-currency-wrapper {
+        position: relative;
+    }
+
+    .ts-currency-select {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 0.35rem 0.65rem 0.35rem 0.75rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #334155;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.15s;
+    }
+
+    .ts-currency-select:hover {
+        border-color: #cbd5e1;
+        background: #f1f5f9;
+    }
+
+    /* Cart Button */
+    .ts-cart-link {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #334155;
+        text-decoration: none;
+        position: relative;
+        transition: all 0.15s;
+    }
+
+    .ts-cart-link:hover {
+        color: #2563eb;
+        border-color: #bfdbfe;
+        background: #eff6ff;
+    }
+
+    .ts-cart-count {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: #ef4444;
+        color: white;
+        font-size: 0.68rem;
+        font-weight: 800;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #ffffff;
+    }
+
+    /* User Profile Pill */
+    .ts-profile-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        padding: 0.3rem 0.75rem 0.3rem 0.4rem;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #1e293b;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.15s;
+    }
+
+    .ts-profile-btn:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+
+    .ts-avatar-circle {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #2563eb;
+        color: white;
+        font-weight: 800;
+        font-size: 0.78rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Dropdown Menu */
+    .ts-menu-dropdown {
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        padding: 0.5rem;
+        min-width: 200px;
+        margin-top: 0.5rem;
+    }
+
+    .ts-menu-dropdown .dropdown-item {
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #334155;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .ts-menu-dropdown .dropdown-item:hover {
+        background: #f1f5f9;
+        color: #2563eb;
+    }
+
+    /* Auth Buttons */
+    .ts-btn-login {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #334155;
+        text-decoration: none;
+        padding: 0.4rem 0.85rem;
+    }
+
+    .ts-btn-signup {
+        background: #2563eb;
+        color: #ffffff !important;
+        font-size: 0.85rem;
+        font-weight: 700;
+        padding: 0.45rem 1rem;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: background 0.15s;
+    }
+
+    .ts-btn-signup:hover {
+        background: #1d4ed8;
+    }
+</style>
+
+<header class="ts-navbar">
+    <div class="container-fluid px-lg-4 px-xl-5 h-100">
+        <div class="ts-nav-container">
+            <!-- 1. Brand Logo -->
+            <a class="ts-brand" href="{% url 'home' %}">
+                <div class="ts-brand-icon">
+                    <i class="bi bi-globe-americas"></i>
+                </div>
+                <div>Travel<span>Sphere</span></div>
+            </a>
+
+            <!-- 2. Main Navigation Links (Desktop) -->
+            <nav class="d-none d-lg-block">
+                <ul class="ts-menu">
+                    <li>
+                        <a class="ts-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a class="ts-link {% if '/destinations' in request.path %}active{% endif %}" href="{% url 'destinations:list' %}">
+                            Destinations
+                        </a>
+                    </li>
+                    <li>
+                        <a class="ts-link {% if '/tours' in request.path %}active{% endif %}" href="{% url 'tours:list' %}">
+                            Tour Packages
+                        </a>
+                    </li>
+                    <li>
+                        <a class="ts-link {% if '/hotels' in request.path %}active{% endif %}" href="{% url 'hotels:list' %}">
+                            Hotels
+                        </a>
+                    </li>
+                    <li>
+                        <a class="ts-link {% if '/transports' in request.path %}active{% endif %}" href="{% url 'transports:search' %}">
+                            Transports
+                        </a>
+                    </li>
+                    <li>
+                        <a class="ts-link ai-badge {% if '/analytics/recommendations' in request.path %}active{% endif %}" href="{% url 'analytics:recommendations' %}">
+                            <i class="bi bi-stars text-warning"></i> AI Trips
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- 3. Right Action Elements (Single Row, No Wrap) -->
+            <div class="ts-actions">
+                <!-- Currency Selector -->
+                <form action="{% url 'switch_currency' %}" method="post" class="d-inline m-0 p-0">
+                    {% csrf_token %}
+                    <div class="ts-currency-wrapper">
+                        <select name="currency" onchange="this.form.submit()" class="ts-currency-select" title="Currency">
+                            {% for curr in SUPPORTED_CURRENCIES %}
+                                <option value="{{ curr }}" {% if curr == CURRENT_CURRENCY %}selected{% endif %}>{{ curr }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+
+                <!-- Shopping Cart Bag -->
+                <a href="{% url 'bookings:cart' %}" class="ts-cart-link" title="Cart">
+                    <i class="bi bi-cart3"></i>
+                    {% if CART_TOTAL_ITEMS > 0 %}
+                        <span class="ts-cart-count">{{ CART_TOTAL_ITEMS }}</span>
+                    {% endif %}
+                </a>
+
+                <!-- User Account / Login State -->
+                {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <div class="ts-profile-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="ts-avatar-circle">
+                                {{ user.first_name|default:user.email|slice:":1"|upper }}
+                            </div>
+                            <span>{{ user.first_name|default:user.email }}</span>
+                            <i class="bi bi-chevron-down text-muted small" style="font-size: 0.7rem;"></i>
+                        </div>
+
+                        <ul class="dropdown-menu dropdown-menu-end ts-menu-dropdown">
+                            <li class="px-3 py-2 border-bottom mb-1 bg-light rounded-2">
+                                <strong class="d-block text-dark small text-truncate" style="max-width: 170px;">{{ user.get_full_name|default:user.email }}</strong>
+                                <small class="text-muted">{{ user.get_role_display|default:user.role }}</small>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'accounts:dashboard_redirect' %}">
+                                    <i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'bookings:history' %}">
+                                    <i class="bi bi-receipt me-2 text-primary"></i>My Bookings
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                                    <i class="bi bi-person-gear me-2 text-primary"></i>Profile & KYC
+                                </a>
+                            </li>
+                            {% if user.is_staff or user.role == 'SUPER_ADMIN' %}
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li>
+                                    <a class="dropdown-item text-primary" href="{% url 'analytics:dashboard' %}">
+                                        <i class="bi bi-bar-chart-line me-2"></i>Executive Console
+                                    </a>
+                                </li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Sign Out
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="{% url 'accounts:login' %}" class="ts-btn-login">Log In</a>
+                        <a href="{% url 'accounts:register_customer' %}" class="ts-btn-signup">Sign Up</a>
+                    </div>
+                {% endif %}
+
+                <!-- Mobile Toggler (Mobile Only) -->
+                <button class="btn btn-light d-lg-none border p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavDrawer" aria-controls="mobileNavDrawer">
+                    <i class="bi bi-list fs-5 text-dark"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Mobile Navigation Drawer -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title fw-bold text-dark" id="mobileNavDrawerLabel">
+            <i class="bi bi-globe-americas text-primary me-2"></i>TravelSphere
+        </h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-3">
+        <ul class="nav flex-column gap-2">
+            <li class="nav-item">
+                <a class="nav-link text-dark fw-semibold p-2 rounded-2" href="{% url 'home' %}"><i class="bi bi-house me-2 text-primary"></i>Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark fw-semibold p-2 rounded-2" href="{% url 'destinations:list' %}"><i class="bi bi-geo-alt me-2 text-primary"></i>Destinations</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark fw-semibold p-2 rounded-2" href="{% url 'tours:list' %}"><i class="bi bi-compass me-2 text-primary"></i>Tour Packages</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark fw-semibold p-2 rounded-2" href="{% url 'hotels:list' %}"><i class="bi bi-building me-2 text-primary"></i>Hotels</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark fw-semibold p-2 rounded-2" href="{% url 'transports:search' %}"><i class="bi bi-airplane me-2 text-primary"></i>Transports</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark fw-semibold p-2 rounded-2" href="{% url 'analytics:recommendations' %}"><i class="bi bi-stars me-2 text-warning"></i>AI Trips</a>
+            </li>
+        </ul>
+    </div>
+</div>

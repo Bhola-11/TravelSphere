@@ -1,0 +1,755 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}TravelSphere — Luxury Expeditions, Curated Tours & 5-Star Sanctuaries{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* 3D Hero Canvas Container */
+    .hero-3d-wrapper {
+        position: relative;
+        background: radial-gradient(circle at 50% 45%, #1e1b4b 0%, #0f172a 65%, #020617 100%);
+        overflow: hidden;
+        min-height: 680px;
+    }
+    #three-globe-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: auto;
+    }
+    .hero-content-layer {
+        position: relative;
+        z-index: 2;
+        pointer-events: none;
+    }
+    .hero-interactive-element {
+        pointer-events: auto;
+    }
+    .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+    .badge-glow {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+    .text-gradient-gold {
+        background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .image-zoom-card {
+        overflow: hidden;
+        border-radius: 1.25rem;
+        position: relative;
+    }
+    .image-zoom-card img {
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-hover:hover .image-zoom-card img,
+    .image-zoom-card:hover img {
+        transform: scale(1.08);
+    }
+    .category-chip-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        text-decoration: none;
+        color: #1e293b;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .category-chip-card:hover {
+        border-color: #3b82f6;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.12);
+        color: #2563eb;
+    }
+    .category-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    .destination-overlay {
+        background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0.05) 100%);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ================= 1. 3D HERO SECTION ================= -->
+<section class="hero-3d-wrapper text-white py-5 d-flex align-items-center">
+    <!-- Three.js 3D WebGL Canvas -->
+    <div id="three-globe-canvas"></div>
+
+    <div class="container py-5 hero-content-layer">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-10 mx-auto text-center">
+                <span class="badge bg-primary bg-opacity-75 text-white rounded-pill px-4 py-2 fw-semibold mb-3 border border-primary-subtle badge-glow hero-interactive-element">
+                    <i class="bi bi-globe-americas me-2"></i> Next-Gen 3D Travel Platform
+                </span>
+                
+                <h1 class="display-3 fw-extrabold mb-3 tracking-tight text-white">
+                    Voyage Across the World with <span class="text-gradient-gold">Bespoke Elegance</span>
+                </h1>
+                
+                <p class="lead text-light-50 mb-4 px-lg-4 fs-5" style="color: #cbd5e1;">
+                    Curated expeditions, 5-star sanctuaries, high-speed rail networks, and AI-powered custom itineraries tailored to your wanderlust.
+                </p>
+
+                <!-- Universal Search Bar -->
+                <div class="card p-3 shadow-lg rounded-4 text-dark glass-card mt-4 hero-interactive-element">
+                    <form action="{% url 'tours:list' %}" method="get" class="row g-2 align-items-center">
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-0 text-primary"><i class="bi bi-geo-alt-fill fs-5"></i></span>
+                                <input type="text" name="q" class="form-control border-0 shadow-none fs-6" placeholder="Where would you like to explore? (e.g. Paris, Tokyo, Alps, Bali)">
+                            </div>
+                        </div>
+                        <div class="col-md-4 border-start-md">
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-0 text-primary"><i class="bi bi-calendar-event fs-5"></i></span>
+                                <input type="text" class="form-control border-0 shadow-none fs-6" placeholder="Any season / Departure Date">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill fw-bold shadow-sm">
+                                <i class="bi bi-compass me-2"></i>Discover Tours
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Quick Destination Chips -->
+                <div class="d-flex flex-wrap justify-content-center gap-2 mt-4 hero-interactive-element">
+                    <span class="text-light-50 small me-2 align-self-center" style="color: #94a3b8;">Popular Expeditions:</span>
+                    <a href="{% url 'tours:list' %}?q=Paris" class="badge bg-white bg-opacity-10 text-white rounded-pill px-3 py-2 text-decoration-none border border-light border-opacity-25 hover-bg">🗼 Paris</a>
+                    <a href="{% url 'tours:list' %}?q=Tokyo" class="badge bg-white bg-opacity-10 text-white rounded-pill px-3 py-2 text-decoration-none border border-light border-opacity-25 hover-bg">🌸 Tokyo</a>
+                    <a href="{% url 'tours:list' %}?q=Alps" class="badge bg-white bg-opacity-10 text-white rounded-pill px-3 py-2 text-decoration-none border border-light border-opacity-25 hover-bg">🏔️ Swiss Alps</a>
+                    <a href="{% url 'tours:list' %}?q=Maldives" class="badge bg-white bg-opacity-10 text-white rounded-pill px-3 py-2 text-decoration-none border border-light border-opacity-25 hover-bg">🏝️ Maldives</a>
+                    <a href="{% url 'tours:list' %}?q=Dubai" class="badge bg-white bg-opacity-10 text-white rounded-pill px-3 py-2 text-decoration-none border border-light border-opacity-25 hover-bg">🏙️ Dubai</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= 2. TRAVEL STYLES & CATEGORIES ================= -->
+<section class="py-5 bg-white border-bottom">
+    <div class="container py-2">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <span class="text-primary fw-bold text-uppercase small">Curated Themes</span>
+                <h3 class="fw-bold mb-0 text-dark">Explore by Travel Style</h3>
+            </div>
+            <a href="{% url 'destinations:list' %}" class="btn btn-outline-primary rounded-pill px-4 btn-sm fw-semibold">View All Themes</a>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{% url 'tours:list' %}?category=island" class="category-chip-card">
+                    <img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=150&q=80" class="category-avatar" alt="Islands">
+                    <div>
+                        <strong class="d-block small text-dark">Islands</strong>
+                        <small class="text-muted" style="font-size: 0.72rem;">Overwater Villas</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{% url 'tours:list' %}?category=alpine" class="category-chip-card">
+                    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=150&q=80" class="category-avatar" alt="Alpine">
+                    <div>
+                        <strong class="d-block small text-dark">Alpine</strong>
+                        <small class="text-muted" style="font-size: 0.72rem;">Ski & Treks</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{% url 'tours:list' %}?category=cultural" class="category-chip-card">
+                    <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=150&q=80" class="category-avatar" alt="Heritage">
+                    <div>
+                        <strong class="d-block small text-dark">Heritage</strong>
+                        <small class="text-muted" style="font-size: 0.72rem;">Art & Castles</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{% url 'tours:list' %}?category=safari" class="category-chip-card">
+                    <img src="https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=150&q=80" class="category-avatar" alt="Safari">
+                    <div>
+                        <strong class="d-block small text-dark">Safari</strong>
+                        <small class="text-muted" style="font-size: 0.72rem;">Wildlife Lodges</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{% url 'tours:list' %}?category=cruise" class="category-chip-card">
+                    <img src="https://images.unsplash.com/photo-1548574505-5e239809ee19?auto=format&fit=crop&w=150&q=80" class="category-avatar" alt="Cruises">
+                    <div>
+                        <strong class="d-block small text-dark">Cruises</strong>
+                        <small class="text-muted" style="font-size: 0.72rem;">Superyachts</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{% url 'tours:list' %}?category=wellness" class="category-chip-card">
+                    <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=150&q=80" class="category-avatar" alt="Wellness">
+                    <div>
+                        <strong class="d-block small text-dark">Wellness</strong>
+                        <small class="text-muted" style="font-size: 0.72rem;">Spa Sanctuaries</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= 3. FEATURED ICONIC DESTINATIONS ================= -->
+<section class="py-5 bg-light">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="text-primary fw-bold text-uppercase small">Global Hotspots</span>
+                <h2 class="fw-bold mb-0 text-dark">Featured Destinations</h2>
+            </div>
+            <a href="{% url 'destinations:list' %}" class="btn btn-outline-primary rounded-pill px-4 fw-semibold">View All Destinations <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+
+        <div class="row g-4">
+            <!-- Large Hero Card: Tokyo -->
+            <div class="col-lg-6">
+                <a href="{% url 'destinations:detail' slug='tokyo-mount-fuji' %}" class="text-decoration-none">
+                    <div class="card border-0 rounded-4 overflow-hidden shadow-sm h-100 position-relative image-zoom-card" style="min-height: 380px;">
+                        <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&q=80" class="w-100 h-100 object-fit-cover position-absolute top-0 start-0" alt="Tokyo & Mount Fuji">
+                        <div class="position-absolute top-0 end-0 m-3 z-2">
+                            <span class="badge bg-white text-dark rounded-pill px-3 py-2 fw-bold shadow-sm">
+                                <i class="bi bi-star-fill text-warning me-1"></i> 4.97 ★
+                            </span>
+                        </div>
+                        <div class="position-absolute bottom-0 start-0 w-100 p-4 text-white destination-overlay z-2">
+                            <span class="badge bg-primary rounded-pill px-3 py-1 mb-2">Japan</span>
+                            <h3 class="fw-extrabold mb-1 text-white">Tokyo & Mount Fuji</h3>
+                            <p class="text-light-50 small mb-2" style="color: #e2e8f0;">Where ancient Shinto sanctuaries meet neon skylines and majestic snow peaks.</p>
+                            <div class="d-flex align-items-center gap-3 small text-light">
+                                <span><i class="bi bi-clock me-1"></i> 7-10 Days</span>
+                                <span><i class="bi bi-compass me-1"></i> 8 Tour Packages</span>
+                                <span class="ms-auto fw-bold text-warning">Explore Guide <i class="bi bi-chevron-right"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Side Destination 1: Paris -->
+            <div class="col-md-6 col-lg-3">
+                <a href="{% url 'destinations:detail' slug='paris-city-of-lights' %}" class="text-decoration-none">
+                    <div class="card border-0 rounded-4 overflow-hidden shadow-sm h-100 position-relative image-zoom-card" style="min-height: 380px;">
+                        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=600&q=80" class="w-100 h-100 object-fit-cover position-absolute top-0 start-0" alt="Paris">
+                        <div class="position-absolute bottom-0 start-0 w-100 p-3 text-white destination-overlay z-2">
+                            <span class="badge bg-primary rounded-pill px-2 py-1 small mb-1">France</span>
+                            <h5 class="fw-bold mb-1 text-white">Paris & Seine</h5>
+                            <p class="text-light-50 small mb-2" style="color: #e2e8f0; font-size: 0.75rem;">Art, gastronomy, and romance.</p>
+                            <span class="text-warning small fw-bold">From $2,890 <i class="bi bi-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Side Destination 2: Swiss Alps -->
+            <div class="col-md-6 col-lg-3">
+                <a href="{% url 'destinations:list' %}" class="text-decoration-none">
+                    <div class="card border-0 rounded-4 overflow-hidden shadow-sm h-100 position-relative image-zoom-card" style="min-height: 380px;">
+                        <img src="https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?auto=format&fit=crop&w=600&q=80" class="w-100 h-100 object-fit-cover position-absolute top-0 start-0" alt="Swiss Alps">
+                        <div class="position-absolute bottom-0 start-0 w-100 p-3 text-white destination-overlay z-2">
+                            <span class="badge bg-primary rounded-pill px-2 py-1 small mb-1">Switzerland</span>
+                            <h5 class="fw-bold mb-1 text-white">Swiss Alps & Zermatt</h5>
+                            <p class="text-light-50 small mb-2" style="color: #e2e8f0; font-size: 0.75rem;">Glacier express & luxury chalets.</p>
+                            <span class="text-warning small fw-bold">From $3,450 <i class="bi bi-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= 4. HANDCRAFTED TOUR PACKAGES ================= -->
+<section class="py-5 bg-white">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="text-primary fw-bold text-uppercase small">Top Rated Itineraries</span>
+                <h2 class="fw-bold mb-0 text-dark">Handcrafted Tour Packages</h2>
+            </div>
+            <a href="{% url 'tours:list' %}" class="btn btn-outline-primary rounded-pill px-4 fw-semibold">View All Tours <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+
+        <div class="row g-4">
+            {% for tour in popular_tours %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-hover border-0 rounded-4 overflow-hidden shadow-sm h-100 d-flex flex-column bg-white">
+                        <div class="position-relative image-zoom-card" style="height: 230px;">
+                            {% if tour.featured_image %}
+                                <img src="{{ tour.featured_image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ tour.title }}">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80" class="w-100 h-100 object-fit-cover" alt="{{ tour.title }}">
+                            {% endif %}
+                            <span class="badge bg-primary text-white position-absolute top-0 start-0 m-3 rounded-pill px-3 py-1 fw-semibold">
+                                {{ tour.category.name|default:'Expedition' }}
+                            </span>
+                            <span class="badge bg-dark bg-opacity-75 text-white position-absolute top-0 end-0 m-3 rounded-pill px-3 py-1">
+                                <i class="bi bi-clock me-1"></i>{{ tour.duration_days }}D / {{ tour.duration_nights }}N
+                            </span>
+                        </div>
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-primary small fw-semibold"><i class="bi bi-geo-alt me-1"></i>{{ tour.destination.title }}</span>
+                                <div class="text-warning small"><i class="bi bi-star-fill"></i> <strong class="text-dark">{{ tour.rating_average }}★</strong></div>
+                            </div>
+                            <h5 class="fw-bold mb-2"><a href="{% url 'tours:detail' slug=tour.slug %}" class="text-dark text-decoration-none">{{ tour.title }}</a></h5>
+                            <p class="text-muted small text-truncate-2 mb-4">{{ tour.subtitle }}</p>
+                            
+                            <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-muted small d-block">Starting from</span>
+                                    <span class="fs-5 fw-bold text-primary">{{ tour.base_price_adult|currency:CURRENT_CURRENCY }}</span>
+                                </div>
+                                <a href="{% url 'tours:detail' slug=tour.slug %}" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold btn-sm shadow-sm">
+                                    Explore <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-md-4">
+                    <div class="card card-hover border-0 rounded-4 overflow-hidden shadow-sm h-100">
+                        <div class="image-zoom-card" style="height: 230px;">
+                            <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" class="w-100 h-100 object-fit-cover" alt="Paris">
+                        </div>
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold">Grand Parisian Art & Seine Romance</h5>
+                            <span class="text-primary fw-bold">$2,890.00</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ================= 5. SIGNATURE LUXURY HOTELS ================= -->
+<section class="py-5 bg-light">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="text-primary fw-bold text-uppercase small">5-Star Sanctuaries</span>
+                <h2 class="fw-bold mb-0 text-dark">Signature Luxury Hotels & Resorts</h2>
+            </div>
+            <a href="{% url 'hotels:list' %}" class="btn btn-outline-primary rounded-pill px-4 fw-semibold">Browse All Stays <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+
+        <div class="row g-4">
+            <!-- Hotel 1 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-hover border-0 rounded-4 overflow-hidden shadow-sm h-100 bg-white">
+                    <div class="position-relative image-zoom-card" style="height: 220px;">
+                        <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80" class="w-100 h-100 object-fit-cover" alt="Le Grand Hotel Paris">
+                        <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3 rounded-pill px-3 py-1 fw-bold">
+                            <i class="bi bi-star-fill"></i> 5-Star Palace
+                        </span>
+                    </div>
+                    <div class="card-body p-4">
+                        <span class="text-primary small fw-semibold"><i class="bi bi-geo-alt me-1"></i>Paris, France</span>
+                        <h5 class="fw-bold mt-1 mb-2">Le Grand Palace Paris</h5>
+                        <p class="text-muted small mb-3">Historic Haussmann luxury opposite the Palais Garnier with Michelin dining.</p>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <div>
+                                <small class="text-muted d-block">From</small>
+                                <span class="fw-bold text-primary fs-5">$650 / night</span>
+                            </div>
+                            <a href="{% url 'hotels:list' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">View Suites</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hotel 2 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-hover border-0 rounded-4 overflow-hidden shadow-sm h-100 bg-white">
+                    <div class="position-relative image-zoom-card" style="height: 220px;">
+                        <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80" class="w-100 h-100 object-fit-cover" alt="Aman Tokyo">
+                        <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3 rounded-pill px-3 py-1 fw-bold">
+                            <i class="bi bi-star-fill"></i> 5-Star Luxury
+                        </span>
+                    </div>
+                    <div class="card-body p-4">
+                        <span class="text-primary small fw-semibold"><i class="bi bi-geo-alt me-1"></i>Tokyo, Japan</span>
+                        <h5 class="fw-bold mt-1 mb-2">Aman Tokyo Skyline Sanctuary</h5>
+                        <p class="text-muted small mb-3">Minimalist ryokan aesthetics elevated high above the Imperial Palace gardens.</p>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <div>
+                                <small class="text-muted d-block">From</small>
+                                <span class="fw-bold text-primary fs-5">$920 / night</span>
+                            </div>
+                            <a href="{% url 'hotels:list' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">View Suites</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hotel 3 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-hover border-0 rounded-4 overflow-hidden shadow-sm h-100 bg-white">
+                    <div class="position-relative image-zoom-card" style="height: 220px;">
+                        <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80" class="w-100 h-100 object-fit-cover" alt="Maldives Overwater Resort">
+                        <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3 rounded-pill px-3 py-1 fw-bold">
+                            <i class="bi bi-star-fill"></i> 5-Star Resort
+                        </span>
+                    </div>
+                    <div class="card-body p-4">
+                        <span class="text-primary small fw-semibold"><i class="bi bi-geo-alt me-1"></i>Maldives</span>
+                        <h5 class="fw-bold mt-1 mb-2">St. Regis Overwater Haven</h5>
+                        <p class="text-muted small mb-3">Private lagoon overwater bungalows with glass floors and infinity pools.</p>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <div>
+                                <small class="text-muted d-block">From</small>
+                                <span class="fw-bold text-primary fs-5">$1,450 / night</span>
+                            </div>
+                            <a href="{% url 'hotels:list' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">View Suites</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= 6. MULTI-MODAL TRANSIT FLEET ================= -->
+<section class="py-5 bg-white">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="text-primary fw-bold text-uppercase small">Seamless Mobility</span>
+                <h2 class="fw-bold mb-0 text-dark">Multi-Modal Flights, Rail & Chauffeurs</h2>
+            </div>
+            <a href="{% url 'transports:search' %}" class="btn btn-outline-primary rounded-pill px-4 fw-semibold">Search Schedules <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 rounded-4 p-4 shadow-sm h-100 text-center card-hover bg-light">
+                    <div class="image-zoom-card mb-3 mx-auto" style="height: 160px; width: 100%;">
+                        <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=600&q=80" class="w-100 h-100 object-fit-cover" alt="First Class Flights">
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2"><i class="bi bi-airplane text-primary me-2"></i>First & Business Flights</h5>
+                    <p class="text-muted small mb-0">Global airline alliances with lie-flat suites and priority lounge clearances.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 rounded-4 p-4 shadow-sm h-100 text-center card-hover bg-light">
+                    <div class="image-zoom-card mb-3 mx-auto" style="height: 160px; width: 100%;">
+                        <img src="https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80" class="w-100 h-100 object-fit-cover" alt="High Speed Rail">
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2"><i class="bi bi-train-front text-primary me-2"></i>High-Speed Bullet Rail</h5>
+                    <p class="text-muted small mb-0">Eurostar, TGV, and Japanese Shinkansen high-speed rail reserved seat passes.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 rounded-4 p-4 shadow-sm h-100 text-center card-hover bg-light">
+                    <div class="image-zoom-card mb-3 mx-auto" style="height: 160px; width: 100%;">
+                        <img src="https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=600&q=80" class="w-100 h-100 object-fit-cover" alt="Chauffeur Services">
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2"><i class="bi bi-car-front text-primary me-2"></i>VIP Chauffeur Fleets</h5>
+                    <p class="text-muted small mb-0">Airport tarmac meet-and-greet with Mercedes-Benz Maybach executive transfers.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= 7. VOYAGER TESTIMONIALS ================= -->
+<section class="py-5 bg-light">
+    <div class="container py-4">
+        <div class="text-center max-w-700 mx-auto mb-5">
+            <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-bold mb-2">Verified Voyagers</span>
+            <h2 class="fw-extrabold text-dark">Loved by Discerning Travelers</h2>
+            <p class="text-muted">Over 48,000 satisfied guests have experienced our curated journeys.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" class="rounded-circle object-fit-cover" style="width: 52px; height: 52px;" alt="Sophia Bennett">
+                        <div>
+                            <strong class="d-block text-dark">Sophia Bennett</strong>
+                            <small class="text-muted">New York, USA • Paris Journey</small>
+                        </div>
+                    </div>
+                    <div class="text-warning mb-2"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                    <p class="text-secondary small mb-0">"TravelSphere handled everything from our private Louvre museum tour to bullet train tickets seamlessly. The 3D platform and instant itinerary updates were incredible."</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" class="rounded-circle object-fit-cover" style="width: 52px; height: 52px;" alt="Marcus Chen">
+                        <div>
+                            <strong class="d-block text-dark">Marcus Chen</strong>
+                            <small class="text-muted">London, UK • Tokyo Expedition</small>
+                        </div>
+                    </div>
+                    <div class="text-warning mb-2"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                    <p class="text-secondary small mb-0">"The Aman Tokyo booking and private helicopter tour of Mount Fuji exceeded all expectations. True white-glove concierge service from start to finish."</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80" class="rounded-circle object-fit-cover" style="width: 52px; height: 52px;" alt="Elena Rostova">
+                        <div>
+                            <strong class="d-block text-dark">Elena Rostova</strong>
+                            <small class="text-muted">Geneva, Switzerland • Maldives</small>
+                        </div>
+                    </div>
+                    <div class="text-warning mb-2"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                    <p class="text-secondary small mb-0">"The overwater villa reservation and private seaplane transfers were orchestrated to perfection. I recommend TravelSphere to all luxury travelers."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= 8. INSPIRING TRAVEL JOURNAL ================= -->
+<section class="py-5 bg-white">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="text-primary fw-bold text-uppercase small">Travel Journal</span>
+                <h2 class="fw-bold mb-0 text-dark">Stories & Insider Guides</h2>
+            </div>
+            <a href="{% url 'about' %}" class="btn btn-outline-primary rounded-pill px-4 fw-semibold">Read All Guides</a>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 rounded-4 overflow-hidden shadow-sm h-100 card-hover">
+                    <div class="image-zoom-card" style="height: 200px;">
+                        <img src="https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80" class="w-100 h-100 object-fit-cover" alt="Kyoto Secrets">
+                    </div>
+                    <div class="card-body p-4">
+                        <span class="badge bg-primary-subtle text-primary mb-2">Insider Guide</span>
+                        <h5 class="fw-bold mb-2">Top 10 Hidden Temples & Tea Houses of Kyoto</h5>
+                        <p class="text-muted small mb-0">Discover quiet zen gardens away from crowds in historical Arashiyama.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 rounded-4 overflow-hidden shadow-sm h-100 card-hover">
+                    <div class="image-zoom-card" style="height: 200px;">
+                        <img src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=600&q=80" class="w-100 h-100 object-fit-cover" alt="Amalfi Coast">
+                    </div>
+                    <div class="card-body p-4">
+                        <span class="badge bg-primary-subtle text-primary mb-2">Culinary Journey</span>
+                        <h5 class="fw-bold mb-2">Sailing Italy's Amalfi Coast: A Gastronomic Odyssey</h5>
+                        <p class="text-muted small mb-0">Fresh seafood cliffside trattorias and lemon groves of Positano.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 rounded-4 overflow-hidden shadow-sm h-100 card-hover">
+                    <div class="image-zoom-card" style="height: 200px;">
+                        <img src="https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?auto=format&fit=crop&w=600&q=80" class="w-100 h-100 object-fit-cover" alt="Northern Lights">
+                    </div>
+                    <div class="card-body p-4">
+                        <span class="badge bg-primary-subtle text-primary mb-2">Expedition</span>
+                        <h5 class="fw-bold mb-2">Chasing the Aurora Borealis in Glass Igloos</h5>
+                        <p class="text-muted small mb-0">Winter wonderland wilderness expeditions in Finnish Lapland.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= 9. VIP NEWSLETTER BANNER ================= -->
+<section class="py-5 text-white position-relative" style="background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;">
+    <div class="container py-5 text-center">
+        <div class="max-w-700 mx-auto">
+            <span class="badge bg-warning text-dark rounded-pill px-3 py-2 fw-bold mb-3"><i class="bi bi-gift me-1"></i> Exclusive Travel Club</span>
+            <h2 class="display-5 fw-extrabold mb-3 text-white">Join the TravelSphere Private Circle</h2>
+            <p class="lead mb-4" style="color: #cbd5e1;">Receive curated private jet itineraries, secret hotel tariffs, and $250 travel credits on your first booking.</p>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <form class="d-flex gap-2 p-2 bg-white rounded-pill shadow-lg">
+                        <input type="email" class="form-control border-0 shadow-none px-4 rounded-pill" placeholder="Enter your VIP email address">
+                        <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold text-nowrap">Join Circle</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Three.js 3D WebGL Engine -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('three-globe-canvas');
+    if (!container) return;
+
+    // Scene, Camera, Renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.z = 220;
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    // 1. Globe Sphere Wireframe & Points
+    const globeRadius = 90;
+    const globeGroup = new THREE.Group();
+    scene.add(globeGroup);
+
+    // Inner wireframe sphere
+    const sphereGeo = new THREE.SphereGeometry(globeRadius, 36, 36);
+    const sphereMat = new THREE.MeshBasicMaterial({
+        color: 0x3b82f6,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.15
+    });
+    const globeMesh = new THREE.Mesh(sphereGeo, sphereMat);
+    globeGroup.add(globeMesh);
+
+    // Shimmering Particle Cloud on Globe Surface
+    const particleCount = 1200;
+    const particleGeo = new THREE.BufferGeometry();
+    const particlePositions = new Float32Array(particleCount * 3);
+
+    for (let i = 0; i < particleCount; i++) {
+        const phi = Math.acos(-1 + (2 * i) / particleCount);
+        const theta = Math.sqrt(particleCount * Math.PI) * phi;
+
+        const x = globeRadius * Math.cos(theta) * Math.sin(phi);
+        const y = globeRadius * Math.sin(theta) * Math.sin(phi);
+        const z = globeRadius * Math.cos(phi);
+
+        particlePositions[i * 3] = x;
+        particlePositions[i * 3 + 1] = y;
+        particlePositions[i * 3 + 2] = z;
+    }
+
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+    const particleMat = new THREE.PointsMaterial({
+        color: 0x60a5fa,
+        size: 2.2,
+        transparent: true,
+        opacity: 0.8
+    });
+    const particles = new THREE.Points(particleGeo, particleMat);
+    globeGroup.add(particles);
+
+    // 2. Flight Trajectory Arcs
+    function createCurveArc(p1, p2, colorHex) {
+        const v1 = new THREE.Vector3(p1.x, p1.y, p1.z);
+        const v2 = new THREE.Vector3(p2.x, p2.y, p2.z);
+        const mid = v1.clone().lerp(v2, 0.5).normalize().multiplyScalar(globeRadius * 1.35);
+
+        const curve = new THREE.QuadraticBezierCurve3(v1, mid, v2);
+        const points = curve.getPoints(50);
+        const curveGeo = new THREE.BufferGeometry().setFromPoints(points);
+        const curveMat = new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity: 0.7, linewidth: 2 });
+        return new THREE.Line(curveGeo, curveMat);
+    }
+
+    // Coordinates of global travel hubs on sphere
+    function latLonToVector3(lat, lon, radius) {
+        const phi = (90 - lat) * (Math.PI / 180);
+        const theta = (lon + 180) * (Math.PI / 180);
+        const x = -(radius * Math.sin(phi) * Math.cos(theta));
+        const z = (radius * Math.sin(phi) * Math.sin(theta));
+        const y = (radius * Math.cos(phi));
+        return { x, y, z };
+    }
+
+    const ny = latLonToVector3(40.7128, -74.0060, globeRadius);
+    const paris = latLonToVector3(48.8566, 2.3522, globeRadius);
+    const tokyo = latLonToVector3(35.6762, 139.6503, globeRadius);
+    const dubai = latLonToVector3(25.2048, 55.2708, globeRadius);
+    const sydney = latLonToVector3(-33.8688, 151.2093, globeRadius);
+
+    globeGroup.add(createCurveArc(ny, paris, 0x38bdf8));
+    globeGroup.add(createCurveArc(paris, dubai, 0x818cf8));
+    globeGroup.add(createCurveArc(dubai, tokyo, 0xc084fc));
+    globeGroup.add(createCurveArc(tokyo, sydney, 0x38bdf8));
+
+    // 3. Floating Background Starfield
+    const starCount = 600;
+    const starGeo = new THREE.BufferGeometry();
+    const starPositions = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount * 3; i += 3) {
+        starPositions[i] = (Math.random() - 0.5) * 800;
+        starPositions[i + 1] = (Math.random() - 0.5) * 800;
+        starPositions[i + 2] = (Math.random() - 0.5) * 600;
+    }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    const starMat = new THREE.PointsMaterial({ color: 0x94a3b8, size: 1.2, transparent: true, opacity: 0.6 });
+    const starField = new THREE.Points(starGeo, starMat);
+    scene.add(starField);
+
+    // Mouse Interaction
+    let mouseX = 0;
+    let mouseY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+        mouseX = (e.clientX - windowHalfX) * 0.0005;
+        mouseY = (e.clientY - windowHalfY) * 0.0005;
+    });
+
+    // Resize Handler
+    window.addEventListener('resize', () => {
+        if (!container) return;
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    });
+
+    // Animation Loop
+    function animate() {
+        requestAnimationFrame(animate);
+
+        globeGroup.rotation.y += 0.003;
+        globeGroup.rotation.x += (mouseY * 0.5 - globeGroup.rotation.x) * 0.05;
+        globeGroup.rotation.y += (mouseX * 0.5) * 0.05;
+
+        starField.rotation.y -= 0.0005;
+
+        renderer.render(scene, camera);
+    }
+    animate();
+});
+</script>
+{% endblock %}

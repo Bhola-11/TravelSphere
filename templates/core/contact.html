@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card border-0 rounded-4 shadow-sm p-4 p-md-5">
+                <h3 class="fw-bold mb-2">Get in Touch with Concierge</h3>
+                <p class="text-muted small mb-4">Have an inquiry regarding custom itineraries or corporate booking? We are here 24/7.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Full Name</label>
+                        <input type="text" name="name" class="form-control" required placeholder="John Doe">
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Email Address</label>
+                            <input type="email" name="email" class="form-control" required placeholder="name@example.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Phone Number</label>
+                            <input type="text" name="phone" class="form-control" placeholder="+1 (555) 000-0000">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Subject</label>
+                        <input type="text" name="subject" class="form-control" required placeholder="Custom Group Tour Inquiry">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Message</label>
+                        <textarea name="message" class="form-control" rows="4" required placeholder="Please provide dates, guest count, and destination preferences..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm">Send Inquiry</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

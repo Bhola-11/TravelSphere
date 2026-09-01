@@ -1,0 +1,47 @@
+# Environments & Secrets
+.env
+.env.*
+*.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+wheels/
+*.egg-info/
+
+# Large Archives
+*.zip
+*.tar
+*.gz
+
+# Django
+*.log
+local_settings.py
+db.sqlite3-journal
+
+# Static/Media
+staticfiles/
+
+# Temp scripts
+build_*.py
+fix_*.py
+expand_*.py
+init_dirs.py
+count_loc.py
+generate_*.py
+enhance_*.py
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
