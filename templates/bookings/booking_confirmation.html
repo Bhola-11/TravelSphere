@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-5">
+                <div class="text-success display-3 mb-3"><i class="bi bi-check-circle-fill"></i></div>
+                <h2 class="fw-bold mb-2">Booking Confirmed!</h2>
+                <p class="text-muted mb-4">Thank you for your reservation. Reference code: <strong class="text-primary">{{ order.booking_reference }}</strong></p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{% url 'accounts:customer_dashboard' %}" class="btn btn-primary rounded-pill px-4 fw-semibold">Go to Dashboard</a>
+                    <a href="{% url 'bookings:detail' pk=order.id %}" class="btn btn-outline-primary rounded-pill px-4 fw-semibold">View Order</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

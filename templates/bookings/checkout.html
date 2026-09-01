@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Checkout & Guest Manifest — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="bg-dark text-white py-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <span class="badge bg-primary rounded-pill px-3 py-1 fw-semibold mb-1">Step 2 of 3</span>
+            <h2 class="fw-bold mb-0">Guest Details & Itinerary Billing</h2>
+        </div>
+        <div class="d-none d-md-flex align-items-center gap-3 text-secondary small">
+            <span class="text-white"><i class="bi bi-cart-check text-primary me-1"></i> Cart</span>
+            <span><i class="bi bi-chevron-right"></i></span>
+            <span class="text-white fw-bold"><i class="bi bi-person-lines-fill text-primary me-1"></i> Details</span>
+            <span><i class="bi bi-chevron-right"></i></span>
+            <span><i class="bi bi-credit-card me-1"></i> Payment</span>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-5">
+        <!-- Billing Form Column -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <h4 class="fw-bold mb-2 text-dark">Primary Contact & Billing</h4>
+                <p class="text-muted small mb-4">Please verify the primary traveler name as printed on government IDs or passports.</p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Primary Traveler Full Name</label>
+                        {{ form.name }}
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">Confirmation Email</label>
+                            {{ form.email }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">Mobile Phone Number</label>
+                            {{ form.phone }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Billing Street Address</label>
+                        {{ form.address }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-secondary">Special Travel Requests & Dietary Notes</label>
+                        {{ form.special_requests }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold w-100 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                        <span>Continue to Secure Payment</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Order Summary Column -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top bg-white" style="top: 100px;">
+                <h5 class="fw-bold mb-3 text-dark">Your Itinerary Items</h5>
+
+                <div class="border-bottom pb-3 mb-3">
+                    {% for item in cart.items.all %}
+                        <div class="d-flex justify-content-between align-items-start mb-3 small">
+                            <div>
+                                <strong class="text-dark d-block">
+                                    {% if item.tour_package %}
+                                        {{ item.tour_package.title }}
+                                    {% elif item.room_type %}
+                                        {{ item.room_type.hotel.title }} ({{ item.room_type.name }})
+                                    {% elif item.transport_schedule %}
+                                        {{ item.transport_schedule.route.route_code }}
+                                    {% endif %}
+                                </strong>
+                                <span class="badge bg-light text-secondary border">{{ item.get_item_type_display }}</span>
+                                <span class="text-muted ms-1">{{ item.start_date|date:"M d, Y" }}</span>
+                            </div>
+                            <span class="fw-bold text-dark">${{ item.subtotal }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <ul class="list-unstyled d-flex flex-column gap-2 small text-secondary border-bottom pb-3 mb-3">
+                    <li class="d-flex justify-content-between">
+                        <span>Cart Subtotal:</span>
+                        <strong class="text-dark">${{ cart.subtotal }}</strong>
+                    </li>
+                    <li class="d-flex justify-content-between">
+                        <span>Taxes & Tourism Levies:</span>
+                        <strong class="text-muted">Calculated on Next Step (~5%)</strong>
+                    </li>
+                    <li class="d-flex justify-content-between fs-5 pt-2 border-top text-dark">
+                        <span class="fw-extrabold">Estimated Total:</span>
+                        <strong class="text-primary fw-extrabold">${{ cart.subtotal }}</strong>
+                    </li>
+                </ul>
+
+                <div class="p-3 bg-light rounded-3 d-flex align-items-center gap-2 small text-muted">
+                    <i class="bi bi-shield-check text-success fs-4"></i>
+                    <span>All reservations are held for 30 minutes while you complete checkout.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
