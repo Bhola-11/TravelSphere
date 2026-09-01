@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Agency Partner Portal — {{ SITE_NAME }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(135deg, #fed7aa 0%, #fbcfe8 35%, #e0e7ff 70%, #dbeafe 100%) !important;
+        background-attachment: fixed !important;
+        min-height: 100vh;
+    }
+    .dashboard-app-frame {
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border-radius: 32px;
+        box-shadow: 0 25px 60px -12px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.8);
+        overflow: hidden;
+        margin: 2rem auto;
+        max-width: 1400px;
+    }
+    .dash-sidebar {
+        background: #fafafa;
+        border-right: 1px solid #f1f5f9;
+        padding: 2rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 100%;
+    }
+    .dash-nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 0.92rem;
+        color: #64748b;
+        text-decoration: none;
+        transition: all 0.2s ease-in-out;
+        margin-bottom: 0.35rem;
+    }
+    .dash-nav-item:hover {
+        color: #0f172a;
+        background: #f1f5f9;
+    }
+    .dash-nav-item.active {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: #ffffff !important;
+        box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.4);
+    }
+    .metric-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 1.35rem;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    }
+    .dash-content-card {
+        background: #ffffff;
+        border-radius: 22px;
+        padding: 1.5rem;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    }
+    .badge-status-complete {
+        background: #dbeafe;
+        color: #1e40af;
+        border-radius: 20px;
+        padding: 0.4rem 0.9rem;
+        font-weight: 600;
+        font-size: 0.78rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4">
+    <div class="dashboard-app-frame">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <div class="col-lg-3 col-xl-2 dash-sidebar">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-4 px-2">
+                        <div class="bg-primary text-white rounded-3 p-2 d-flex align-items-center justify-content-center shadow-sm" style="width: 36px; height: 36px;">
+                            <i class="bi bi-briefcase-fill"></i>
+                        </div>
+                        <h5 class="fw-extrabold mb-0 text-dark">Agency Portal</h5>
+                    </div>
+
+                    <div class="d-flex flex-column mb-4">
+                        <a href="{% url 'agencies:dashboard' %}" class="dash-nav-item active">
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Overview</span>
+                        </a>
+                        <a href="{% url 'agencies:payout_request' %}" class="dash-nav-item">
+                            <i class="bi bi-cash-stack"></i>
+                            <span>Payout Requests</span>
+                        </a>
+                        <a href="{% url 'tours:list' %}" class="dash-nav-item">
+                            <i class="bi bi-compass"></i>
+                            <span>B2B Packages</span>
+                        </a>
+                        <a href="{% url 'accounts:profile' %}" class="dash-nav-item">
+                            <i class="bi bi-gear"></i>
+                            <span>Agency Settings</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <a href="{% url 'accounts:logout' %}" class="dash-nav-item text-danger border-0">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Log Out</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="col-lg-9 col-xl-10 p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 class="fw-bold mb-0 text-dark">{{ agency.company_name|default:'Agency Partner Console' }}</h3>
+                        <span class="text-muted small">License: <strong>{{ agency.license_number|default:'Active IATA Partner' }}</strong></span>
+                    </div>
+                    <a href="{% url 'agencies:payout_request' %}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                        <i class="bi bi-bank me-1"></i> Request Payout
+                    </a>
+                </div>
+
+                <!-- 3 Top Metric Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="metric-card d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small d-block">Available Wallet</span>
+                                <h3 class="fw-extrabold mb-0 text-success">${{ agency.wallet_balance|default:'4,520.00' }}</h3>
+                            </div>
+                            <span class="badge bg-success-subtle text-success p-2 rounded-circle fs-5"><i class="bi bi-wallet2"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="metric-card d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small d-block">Commission Tier</span>
+                                <h3 class="fw-extrabold mb-0 text-primary">{{ agency.commission_rate|default:'12.50' }}%</h3>
+                            </div>
+                            <span class="badge bg-primary-subtle text-primary p-2 rounded-circle fs-5"><i class="bi bi-percent"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="metric-card d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small d-block">Gross Generated</span>
+                                <h3 class="fw-extrabold mb-0 text-dark">${{ agency.total_revenue_generated|default:'38,400.00' }}</h3>
+                            </div>
+                            <span class="badge bg-warning-subtle text-warning p-2 rounded-circle fs-5"><i class="bi bi-trophy"></i></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clean Content Without Graphs -->
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="dash-content-card mb-4">
+                            <h5 class="fw-bold mb-3 text-dark">Recent Commission Settlements</h5>
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0">
+                                    <thead class="text-muted small border-bottom">
+                                        <tr>
+                                            <th>Transaction ID</th>
+                                            <th>Voyager / Order</th>
+                                            <th>Commission Rate</th>
+                                            <th class="text-end">Payout Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="fw-semibold text-dark small">#COMM-8821</td>
+                                            <td>
+                                                <strong class="text-dark small d-block">Parisian Romance Tour</strong>
+                                                <small class="text-muted">Sophia Bennett</small>
+                                            </td>
+                                            <td><span class="badge-status-complete">12.5%</span></td>
+                                            <td class="text-end fw-bold text-success small">+$504.47</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-semibold text-dark small">#COMM-8819</td>
+                                            <td>
+                                                <strong class="text-dark small d-block">Tokyo Grand Expedition</strong>
+                                                <small class="text-muted">Marcus Chen</small>
+                                            </td>
+                                            <td><span class="badge-status-complete">12.5%</span></td>
+                                            <td class="text-end fw-bold text-success small">+$620.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-semibold text-dark small">#COMM-8794</td>
+                                            <td>
+                                                <strong class="text-dark small d-block">Swiss Alps Luxury Chalet</strong>
+                                                <small class="text-muted">Elena Rostova</small>
+                                            </td>
+                                            <td><span class="badge-status-complete">12.5%</span></td>
+                                            <td class="text-end fw-bold text-success small">+$380.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="dash-content-card">
+                            <h6 class="fw-bold mb-3 text-dark">B2B Quick Actions</h6>
+                            <div class="d-flex flex-column gap-2">
+                                <a href="{% url 'tours:list' %}" class="btn btn-outline-primary rounded-pill btn-sm text-start p-2 px-3 fw-semibold">
+                                    <i class="bi bi-box-seam me-2"></i> Browse White-Label Packages
+                                </a>
+                                <a href="{% url 'agencies:payout_request' %}" class="btn btn-outline-success rounded-pill btn-sm text-start p-2 px-3 fw-semibold">
+                                    <i class="bi bi-credit-card-2-front me-2"></i> Wire Transfer Bank Settlement
+                                </a>
+                                <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary rounded-pill btn-sm text-start p-2 px-3 fw-semibold">
+                                    <i class="bi bi-shield-lock me-2"></i> Manage Partner API Keys
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

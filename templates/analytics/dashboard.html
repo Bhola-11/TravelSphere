@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="fw-bold mb-4"><i class="bi bi-bar-chart-line me-2 text-primary"></i>Executive Analytics & BI Console</h2>
+    
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <span class="text-muted small">Gross Revenue</span>
+                <h3 class="fw-bold text-primary mb-0">${{ kpis.total_revenue }}</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <span class="text-muted small">Total Bookings</span>
+                <h3 class="fw-bold text-dark mb-0">{{ kpis.total_bookings }}</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <span class="text-muted small">Registered Users</span>
+                <h3 class="fw-bold text-dark mb-0">{{ kpis.total_users }}</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <span class="text-muted small">Live Packages</span>
+                <h3 class="fw-bold text-dark mb-0">{{ kpis.total_tours }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
