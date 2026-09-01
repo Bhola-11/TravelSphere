@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}My Profile — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+                <h3 class="fw-bold mb-4">Personal Profile & Travel Passport</h3>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h5 class="fw-bold text-primary mb-3">Basic Information</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">First Name</label>
+                            {{ user_form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Last Name</label>
+                            {{ user_form.last_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Phone Number</label>
+                            {{ user_form.phone_number }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Avatar Photo</label>
+                            {{ user_form.avatar }}
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold text-primary mb-3">Passport & Preferences</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Nationality</label>
+                            {{ profile_form.nationality }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Passport Number</label>
+                            {{ profile_form.passport_number }}
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm">Save Profile Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
