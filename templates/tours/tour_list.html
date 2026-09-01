@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Tour Filter Sidebar -->
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 100px;">
+                <h5 class="fw-bold mb-3"><i class="bi bi-funnel me-2"></i>Filter Tours</h5>
+                <form method="get">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Keywords</label>
+                        {{ form.q }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Destination</label>
+                        {{ form.destination }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Category</label>
+                        {{ form.category }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Difficulty</label>
+                        {{ form.difficulty }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Max Budget ($)</label>
+                        {{ form.max_price }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold">Search Tours</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tour Grid -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold mb-0">Curated Tour Packages</h3>
+                <span class="text-muted small">{{ tours|length }} tours available</span>
+            </div>
+
+            <div class="row g-4">
+                {% for tour in tours %}
+                    <div class="col-md-6">
+                        <div class="card card-hover border-0 rounded-4 overflow-hidden shadow-sm h-100 d-flex flex-column">
+                            <div class="position-relative" style="height: 220px; background: #cbd5e1;">
+                                {% if tour.featured_image %}
+                                    <img src="{{ tour.featured_image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ tour.title }}">
+                                {% else %}
+                                    <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-primary-subtle text-primary fs-1"><i class="bi bi-compass"></i></div>
+                                {% endif %}
+                                <span class="badge bg-primary text-white position-absolute top-0 start-0 m-3 rounded-pill px-3 py-1">{{ tour.category.name|default:'Tour' }}</span>
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column">
+                                <span class="text-primary small fw-semibold">{{ tour.destination.title }}</span>
+                                <h5 class="fw-bold mt-1 mb-2"><a href="{% url 'tours:detail' slug=tour.slug %}" class="text-dark text-decoration-none">{{ tour.title }}</a></h5>
+                                <p class="text-muted small text-truncate-2 mb-4">{{ tour.subtitle }}</p>
+                                
+                                <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="text-muted small d-block">From</span>
+                                        <span class="fs-5 fw-bold text-primary">{{ tour.base_price_adult|currency:CURRENT_CURRENCY }}</span>
+                                    </div>
+                                    <a href="{% url 'tours:detail' slug=tour.slug %}" class="btn btn-primary rounded-pill px-4 fw-semibold btn-sm">Explore Tour</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted">No tour packages found matching the selected criteria.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
