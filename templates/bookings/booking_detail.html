@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Order #{{ booking.booking_reference }} — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 mb-2">Booking Confirmation</span>
+            <h2 class="fw-bold mb-0">Order #{{ booking.booking_reference }}</h2>
+            <span class="text-muted small">Booked on {{ booking.created_at|date:"M d, Y H:i" }}</span>
+        </div>
+        <div>
+            {{ booking.status|status_badge }}
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <!-- Line Items -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-white p-4 border-bottom">
+                    <h5 class="fw-bold mb-0">Reserved Itinerary Items</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Item Details</th>
+                                <th>Category</th>
+                                <th>Qty</th>
+                                <th class="text-end pe-4">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in booking.line_items.all %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <h6 class="fw-bold mb-0">{{ item.title }}</h6>
+                                        <span class="text-muted small">{{ item.start_date|date:"M d, Y" }}{% if item.end_date %} to {{ item.end_date|date:"M d, Y" }}{% endif %}</span>
+                                    </td>
+                                    <td><span class="badge bg-light text-dark border">{{ item.get_item_type_display }}</span></td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td class="text-end pe-4 fw-bold text-primary">${{ item.total_price }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <h5 class="fw-bold mb-3">Billing & Tax Invoice</h5>
+                <ul class="list-unstyled d-flex flex-column gap-2 small text-secondary border-bottom pb-3 mb-3">
+                    <li class="d-flex justify-content-between">
+                        <span>Billed To:</span>
+                        <strong class="text-dark">{{ booking.billing_name }}</strong>
+                    </li>
+                    <li class="d-flex justify-content-between">
+                        <span>Email:</span>
+                        <strong class="text-dark">{{ booking.billing_email }}</strong>
+                    </li>
+                    <li class="d-flex justify-content-between">
+                        <span>Subtotal:</span>
+                        <strong class="text-dark">${{ booking.subtotal_amount }}</strong>
+                    </li>
+                    <li class="d-flex justify-content-between">
+                        <span>Taxes & Fees:</span>
+                        <strong class="text-dark">${{ booking.tax_amount }}</strong>
+                    </li>
+                    <li class="d-flex justify-content-between fs-6 pt-2 border-top">
+                        <span class="fw-bold">Total Paid:</span>
+                        <strong class="text-primary fw-bold">${{ booking.total_amount }}</strong>
+                    </li>
+                </ul>
+
+                {% if booking.status == 'PENDING_PAYMENT' %}
+                    <a href="{% url 'payments:initiate' order_id=booking.id %}" class="btn btn-success w-100 rounded-pill fw-bold shadow">
+                        <i class="bi bi-credit-card me-2"></i>Pay Now
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

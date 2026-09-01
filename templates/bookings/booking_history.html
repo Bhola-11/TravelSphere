@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}My Booking History — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">My Travel Orders & Bookings</h2>
+            <p class="text-muted small">Review all current and past itinerary reservations</p>
+        </div>
+        <a href="{% url 'tours:list' %}" class="btn btn-primary rounded-pill px-4 fw-semibold">Book New Tour</a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Reference</th>
+                        <th>Date Booked</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in bookings %}
+                        <tr>
+                            <td class="ps-4 fw-bold text-primary">{{ b.booking_reference }}</td>
+                            <td class="text-muted">{{ b.created_at|date:"M d, Y" }}</td>
+                            <td class="fw-bold">${{ b.total_amount }}</td>
+                            <td>{{ b.status|status_badge }}</td>
+                            <td class="text-end pe-4">
+                                <a href="{% url 'bookings:detail' pk=b.id %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">View Order</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">You have no travel bookings yet. Explore our curated tours!</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
