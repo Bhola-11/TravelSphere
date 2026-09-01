@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block content %}
+<div class="bg-dark text-white py-5">
+    <div class="container py-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-primary rounded-pill px-3 py-2 mb-2">{{ tour.category.name }} • Code: {{ tour.code }}</span>
+                <h1 class="display-5 fw-bold mb-3">{{ tour.title }}</h1>
+                <p class="lead text-light-50 mb-0">{{ tour.subtitle }}</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                <div class="bg-white text-dark p-4 rounded-4 shadow d-inline-block text-start w-100">
+                    <span class="text-muted small d-block">Price per Adult</span>
+                    <h2 class="fw-bold text-primary mb-3">{{ tour.final_price_adult|currency:CURRENT_CURRENCY }}</h2>
+                    <a href="#bookingSection" class="btn btn-primary w-100 rounded-pill py-2 fw-bold">Reserve Departure Date</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <h4 class="fw-bold mb-3">Tour Summary</h4>
+            <p class="text-secondary leading-relaxed mb-5">{{ tour.summary }}</p>
+
+            <h4 class="fw-bold mb-4">Day-by-Day Itinerary</h4>
+            <div class="accordion mb-5" id="itineraryAccordion">
+                {% for day in itinerary_days %}
+                    <div class="accordion-item border-0 mb-3 rounded-4 shadow-sm overflow-hidden">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button {% if not forloop.first %}collapsed{% endif %} fw-bold bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#day{{ day.day_number }}">
+                                <span class="badge bg-primary me-3">Day {{ day.day_number }}</span> {{ day.title }}
+                            </button>
+                        </h2>
+                        <div id="day{{ day.day_number }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#itineraryAccordion">
+                            <div class="accordion-body p-4 text-secondary">
+                                <p class="mb-3">{{ day.description }}</p>
+                                <div class="d-flex gap-4 small text-muted border-top pt-2">
+                                    <span><i class="bi bi-cup-hot me-1"></i>Meals: {{ day.meals_included }}</span>
+                                    <span><i class="bi bi-building me-1"></i>Stay: {{ day.accommodation|default:'Standard Hotel' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">Day itinerary details will be updated shortly.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Inclusions & Exclusions -->
+            <h4 class="fw-bold mb-3">What's Included & Excluded</h4>
+            <div class="row g-4 mb-5">
+                <div class="col-md-6">
+                    <div class="card border-0 rounded-4 bg-success-subtle p-4 h-100">
+                        <h6 class="fw-bold text-success mb-3"><i class="bi bi-check-circle-fill me-2"></i>Inclusions</h6>
+                        <ul class="list-unstyled mb-0 small d-flex flex-column gap-2 text-dark">
+                            {% for inc in inclusions %}
+                                <li><i class="bi bi-check2 text-success me-2"></i>{{ inc.item_text }}</li>
+                            {% empty %}
+                                <li>Accommodation, Guided Tours, Daily Breakfast</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 rounded-4 bg-danger-subtle p-4 h-100">
+                        <h6 class="fw-bold text-danger mb-3"><i class="bi bi-x-circle-fill me-2"></i>Exclusions</h6>
+                        <ul class="list-unstyled mb-0 small d-flex flex-column gap-2 text-dark">
+                            {% for exc in exclusions %}
+                                <li><i class="bi bi-x text-danger me-2"></i>{{ exc.item_text }}</li>
+                            {% empty %}
+                                <li>International Airfare, Visa Fees, Personal Expenses</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <h4 class="fw-bold mb-3">Traveler Reviews</h4>
+            <div class="card border-0 rounded-4 p-4 shadow-sm mb-4">
+                <form action="{% url 'reviews:submit_tour_review' pk=tour.id %}" method="post">
+                    {% csrf_token %}
+                    <h6 class="fw-bold mb-3">Leave a Review</h6>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Rating</label>
+                            <select name="rating" class="form-select">
+                                <option value="5">5 - Excellent</option>
+                                <option value="4">4 - Very Good</option>
+                                <option value="3">3 - Good</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label small fw-semibold">Review Title</label>
+                            <input type="text" name="title" class="form-control" required placeholder="Unforgettable Experience!">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <textarea name="comment" rows="3" class="form-control" required placeholder="Tell us about the tour guide, accommodations, and pace..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 btn-sm fw-bold">Post Review</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Booking Widget Column -->
+        <div class="col-lg-4" id="bookingSection">
+            <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 100px;">
+                <h5 class="fw-bold mb-3"><i class="bi bi-calendar3 me-2"></i>Book This Tour</h5>
+                <form action="{% url 'bookings:add_tour' pk=tour.id %}" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Select Departure Date</label>
+                        <select name="departure_date" class="form-select" required>
+                            {% for dep in departures %}
+                                <option value="{{ dep.departure_date|date:'Y-m-d' }}">
+                                    {{ dep.departure_date|date:'M d, Y' }} ({{ dep.available_slots }} slots) - ${{ dep.adult_price }}
+                                </option>
+                            {% empty %}
+                                <option value="{% now 'Y-m-d' %}">Open Daily Departure</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">Adults (12+)</label>
+                            <input type="number" name="adults" value="1" min="1" max="20" class="form-control">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">Children (0-11)</label>
+                            <input type="number" name="children" value="0" min="0" max="10" class="form-control">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm">
+                        <i class="bi bi-cart-plus me-2"></i>Add to Travel Cart
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

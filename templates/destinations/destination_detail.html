@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}{{ destination.title }} — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<!-- Destination Hero -->
+<div class="position-relative text-white py-5" style="background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('{% if destination.featured_image %}{{ destination.featured_image.url }}{% else %}https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1600&q=80{% endif %}') center/cover no-repeat; min-height: 380px;">
+    <div class="container py-5 d-flex flex-column justify-content-center">
+        <span class="badge bg-primary rounded-pill px-3 py-2 fw-semibold w-fit mb-2">{{ destination.city.country.name }}</span>
+        <h1 class="display-4 fw-extrabold mb-2">{{ destination.title }}</h1>
+        <p class="lead mb-0 text-light">{{ destination.tagline }}</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <h4 class="fw-bold mb-3">Overview</h4>
+            <p class="text-secondary leading-relaxed mb-4">{{ destination.overview }}</p>
+
+            <h4 class="fw-bold mb-3">Highlights & Points of Interest</h4>
+            <div class="row g-3 mb-5">
+                {% for poi in pois %}
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm rounded-4 p-3 h-100">
+                            <h6 class="fw-bold text-primary mb-1">{{ poi.title }}</h6>
+                            <span class="badge bg-light text-dark border w-fit mb-2">{{ poi.get_poi_type_display }}</span>
+                            <p class="text-muted small mb-0">{{ poi.description|truncatewords:20 }}</p>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted small">No specific POIs listed yet.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Related Tour Packages -->
+            <h4 class="fw-bold mb-3">Tours in {{ destination.title }}</h4>
+            <div class="row g-3">
+                {% for tour in tours %}
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm rounded-4 p-3">
+                            <h6 class="fw-bold mb-1"><a href="{% url 'tours:detail' slug=tour.slug %}" class="text-dark text-decoration-none">{{ tour.title }}</a></h6>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="fw-bold text-primary">${{ tour.base_price_adult }}</span>
+                                <a href="{% url 'tours:detail' slug=tour.slug %}" class="btn btn-sm btn-primary rounded-pill px-3">View Tour</a>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-muted small">No tours currently listed for this destination.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 100px;">
+                <h5 class="fw-bold mb-3">Travel Snapshot</h5>
+                <ul class="list-unstyled d-flex flex-column gap-3 mb-0 small text-secondary">
+                    <li class="d-flex justify-content-between border-bottom pb-2">
+                        <span>Best Time to Visit:</span>
+                        <strong class="text-dark">{{ destination.best_time_to_visit }}</strong>
+                    </li>
+                    <li class="d-flex justify-content-between border-bottom pb-2">
+                        <span>Ideal Duration:</span>
+                        <strong class="text-dark">{{ destination.ideal_duration_days }} Days</strong>
+                    </li>
+                    <li class="d-flex justify-content-between border-bottom pb-2">
+                        <span>Climate Type:</span>
+                        <strong class="text-dark">{{ destination.climate_type|default:'Temperate' }}</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Sidebar Filter -->
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 100px;">
+                <h5 class="fw-bold mb-3"><i class="bi bi-funnel me-2"></i>Filter Explorer</h5>
+                <form method="get">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Search Term</label>
+                        {{ form.q }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Continent</label>
+                        {{ form.continent }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Category</label>
+                        {{ form.category }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Max Duration (Days)</label>
+                        {{ form.duration }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold">Apply Filters</button>
+                    <a href="{% url 'destinations:list' %}" class="btn btn-link text-decoration-none w-100 text-muted small mt-2">Reset</a>
+                </form>
+            </div>
+        </div>
+
+        <!-- Destination Results Grid -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold mb-0">Global Destinations</h3>
+                <span class="text-muted small">Showing {{ destinations|length }} destinations</span>
+            </div>
+
+            <div class="row g-4">
+                {% for dest in destinations %}
+                    <div class="col-md-6">
+                        <a href="{% url 'destinations:detail' slug=dest.slug %}" class="text-decoration-none text-dark">
+                            <div class="card card-hover border-0 rounded-4 overflow-hidden shadow-sm h-100">
+                                <div class="position-relative" style="height: 220px; background: #cbd5e1;">
+                                    {% if dest.featured_image %}
+                                        <img src="{{ dest.featured_image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ dest.title }}">
+                                    {% else %}
+                                        <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-secondary-subtle text-secondary fs-1"><i class="bi bi-geo-alt"></i></div>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body p-4">
+                                    <span class="text-primary small fw-semibold">{{ dest.city.country.name }}</span>
+                                    <h5 class="fw-bold mt-1 mb-2">{{ dest.title }}</h5>
+                                    <p class="text-muted small text-truncate-2 mb-3">{{ dest.tagline }}</p>
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                        <span class="badge bg-light text-dark border"><i class="bi bi-clock me-1"></i>{{ dest.ideal_duration_days }} Days</span>
+                                        <span class="text-primary fw-semibold small">Explore <i class="bi bi-arrow-right"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted">No destinations matching your filter criteria.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
