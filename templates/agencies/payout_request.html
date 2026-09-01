@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Request Payout — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+                <h3 class="fw-bold mb-3">Request Commission Payout</h3>
+                <p class="text-muted small mb-4">Available balance: <strong>${{ agency.wallet_balance|default:'0.00' }}</strong></p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Amount to Withdraw (USD)</label>
+                        {{ form.amount }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Payout Method</label>
+                        {{ form.payout_method }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Bank / Transfer Details</label>
+                        {{ form.bank_account_info }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold">Submit Payout Request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
