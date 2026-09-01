@@ -1,0 +1,551 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Traveler Dashboard — {{ SITE_NAME }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Neumorphic / Glassmorphic Floating Dashboard Canvas */
+    body {
+        background: linear-gradient(135deg, #fed7aa 0%, #fbcfe8 35%, #e0e7ff 70%, #dbeafe 100%) !important;
+        background-attachment: fixed !important;
+        min-height: 100vh;
+    }
+    
+    .dashboard-app-frame {
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border-radius: 32px;
+        box-shadow: 0 25px 60px -12px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.8);
+        overflow: hidden;
+        margin: 2rem auto;
+        max-width: 1400px;
+    }
+
+    /* Sidebar Navigation */
+    .dash-sidebar {
+        background: #fafafa;
+        border-right: 1px solid #f1f5f9;
+        padding: 2rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 100%;
+    }
+
+    .dash-nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 0.92rem;
+        color: #64748b;
+        text-decoration: none;
+        transition: all 0.2s ease-in-out;
+        margin-bottom: 0.35rem;
+    }
+
+    .dash-nav-item:hover {
+        color: #0f172a;
+        background: #f1f5f9;
+    }
+
+    .dash-nav-item.active {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: #ffffff !important;
+        box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.4);
+    }
+
+    .dash-nav-item i {
+        font-size: 1.15rem;
+    }
+
+    /* Top Metric Stat Cards */
+    .metric-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 1.35rem;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    .metric-icon-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .circle-progress-badge {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.75rem;
+    }
+
+    /* Content Cards */
+    .dash-content-card {
+        background: #ffffff;
+        border-radius: 22px;
+        padding: 1.5rem;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Status Badges */
+    .badge-status-complete {
+        background: #dbeafe;
+        color: #1e40af;
+        border-radius: 20px;
+        padding: 0.4rem 0.9rem;
+        font-weight: 600;
+        font-size: 0.78rem;
+    }
+
+    .badge-status-pending {
+        background: #dcfce7;
+        color: #166534;
+        border-radius: 20px;
+        padding: 0.4rem 0.9rem;
+        font-weight: 600;
+        font-size: 0.78rem;
+    }
+
+    .badge-status-canceled {
+        background: #fee2e2;
+        color: #991b1b;
+        border-radius: 20px;
+        padding: 0.4rem 0.9rem;
+        font-weight: 600;
+        font-size: 0.78rem;
+    }
+
+    /* Promo Upgrade Box */
+    .promo-upgrade-card {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border-radius: 20px;
+        padding: 1.25rem;
+        border: 1px solid #bfdbfe;
+        text-align: center;
+    }
+
+    /* Custom Search Pill */
+    .dash-search-pill {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 30px;
+        padding: 0.4rem 0.5rem 0.4rem 1.25rem;
+        display: flex;
+        align-items: center;
+        width: 320px;
+    }
+    
+    .dash-search-pill input {
+        border: none;
+        background: transparent;
+        outline: none;
+        font-size: 0.9rem;
+        width: 100%;
+    }
+
+    .dash-search-btn {
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4">
+    <div class="dashboard-app-frame">
+        <div class="row g-0">
+            <!-- 1. Left Sidebar Navigation -->
+            <div class="col-lg-3 col-xl-2 dash-sidebar">
+                <div>
+                    <!-- Brand -->
+                    <div class="d-flex align-items-center gap-2 mb-4 px-2">
+                        <div class="bg-primary text-white rounded-3 p-2 d-flex align-items-center justify-content-center shadow-sm" style="width: 36px; height: 36px;">
+                            <i class="bi bi-globe-americas"></i>
+                        </div>
+                        <h5 class="fw-extrabold mb-0 text-dark">TravelSphere</h5>
+                    </div>
+
+                    <!-- Nav Links -->
+                    <div class="d-flex flex-column mb-4">
+                        <a href="{% url 'accounts:customer_dashboard' %}" class="dash-nav-item active">
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="{% url 'bookings:history' %}" class="dash-nav-item">
+                            <i class="bi bi-receipt"></i>
+                            <span>Transactions</span>
+                        </a>
+                        <a href="{% url 'tours:list' %}" class="dash-nav-item">
+                            <i class="bi bi-compass"></i>
+                            <span>Tour Packages</span>
+                        </a>
+                        <a href="{% url 'hotels:list' %}" class="dash-nav-item">
+                            <i class="bi bi-building"></i>
+                            <span>Hotels & Stays</span>
+                        </a>
+                        <a href="{% url 'transports:list' %}" class="dash-nav-item">
+                            <i class="bi bi-airplane"></i>
+                            <span>Transit & Rail</span>
+                        </a>
+                        <a href="{% url 'analytics:recommendations' %}" class="dash-nav-item">
+                            <i class="bi bi-stars"></i>
+                            <span>AI Trip Planner</span>
+                        </a>
+                        <a href="{% url 'accounts:profile' %}" class="dash-nav-item">
+                            <i class="bi bi-person"></i>
+                            <span>Profile</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Bottom Promo Card & Log Out -->
+                <div>
+                    <div class="promo-upgrade-card mb-3">
+                        <div class="fs-2 mb-1">👍</div>
+                        <h6 class="fw-bold mb-1 text-dark">Voyager Elite Pro</h6>
+                        <p class="text-muted small mb-2" style="font-size: 0.75rem;">Get airport lounge passes & VIP perks</p>
+                        <a href="{% url 'tours:list' %}" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold" style="font-size: 0.78rem;">Upgrade Now <i class="bi bi-arrow-right"></i></a>
+                    </div>
+
+                    <a href="{% url 'accounts:logout' %}" class="dash-nav-item text-danger border-0">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Log Out</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 2. Main Content Area -->
+            <div class="col-lg-9 col-xl-10 p-4 p-md-5">
+                <!-- Top Header Bar -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                    <div>
+                        <h3 class="fw-bold mb-0 text-dark">Dashboard</h3>
+                        <span class="text-muted small">Welcome back, {{ user.get_full_name|default:user.email }}!</span>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3">
+                        <!-- Search Bar -->
+                        <form action="{% url 'tours:list' %}" method="get" class="dash-search-pill d-none d-md-flex">
+                            <input type="text" name="q" placeholder="Search tours, cities, hotels...">
+                            <button type="submit" class="dash-search-btn"><i class="bi bi-search"></i></button>
+                        </form>
+
+                        <!-- User Profile Pill -->
+                        <div class="d-flex align-items-center gap-2 bg-white px-3 py-1 rounded-pill border shadow-sm">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" class="rounded-circle object-fit-cover" style="width: 34px; height: 34px;" alt="Avatar">
+                            <div class="d-none d-sm-block text-start">
+                                <span class="d-block fw-bold text-dark small" style="line-height: 1.1;">{{ user.first_name|default:user.email }}</span>
+                                <small class="text-muted" style="font-size: 0.72rem;">Voyager Member</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3 Top Metric Stat Cards -->
+                <div class="row g-3 mb-4">
+                    <!-- Stat 1 -->
+                    <div class="col-md-4">
+                        <div class="metric-card d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="metric-icon-box bg-primary-subtle text-primary mb-2">
+                                    <i class="bi bi-calendar-check"></i>
+                                </div>
+                                <h3 class="fw-extrabold mb-0 text-dark">{{ active_bookings_count|default:1 }}</h3>
+                                <span class="text-muted small">Active Reservations</span>
+                            </div>
+                            <div class="circle-progress-badge bg-primary-subtle text-primary border border-primary-subtle">
+                                85%
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stat 2 -->
+                    <div class="col-md-4">
+                        <div class="metric-card d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="metric-icon-box bg-success-subtle text-success mb-2">
+                                    <i class="bi bi-award"></i>
+                                </div>
+                                <h3 class="fw-extrabold mb-0 text-dark">{{ profile.loyalty_points|default:1250 }}+</h3>
+                                <span class="text-muted small">Voyage Rewards</span>
+                            </div>
+                            <div class="circle-progress-badge bg-success-subtle text-success border border-success-subtle">
+                                92%
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stat 3 -->
+                    <div class="col-md-4">
+                        <div class="metric-card d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="metric-icon-box bg-danger-subtle text-danger mb-2">
+                                    <i class="bi bi-shield-check"></i>
+                                </div>
+                                <h3 class="fw-extrabold mb-0 text-dark">{{ kyc_status|default:'Verified' }}</h3>
+                                <span class="text-muted small">KYC Security Status</span>
+                            </div>
+                            <div class="circle-progress-badge bg-danger-subtle text-danger border border-danger-subtle">
+                                100%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Layout (No Graphs, Clean Travel Widgets) -->
+                <div class="row g-4 mb-4">
+                    <!-- Left Side: Live Itinerary Hub + Recent Orders -->
+                    <div class="col-lg-8">
+                        <!-- 1. Upcoming Journey Card -->
+                        <div class="dash-content-card mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <span class="text-primary fw-bold text-uppercase small" style="font-size: 0.75rem;">Next Departure</span>
+                                    <h5 class="fw-bold mb-0 text-dark">Live Journey & Itinerary Status</h5>
+                                </div>
+                                <span class="badge bg-primary text-white rounded-pill px-3 py-1 small">Confirmed</span>
+                            </div>
+
+                            <div class="p-3 bg-light rounded-4 mb-3 border">
+                                <div class="row align-items-center g-3">
+                                    <div class="col-md-4">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="bg-white p-2 rounded-3 shadow-sm text-primary fs-3">
+                                                <i class="bi bi-airplane-engines"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-0 text-dark">Paris Expeditions</h6>
+                                                <small class="text-muted">AF-1882 • Non-stop</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="d-flex justify-content-between align-items-center text-center">
+                                            <div>
+                                                <strong class="d-block text-dark">JFK (08:30)</strong>
+                                                <small class="text-muted">Terminal 4</small>
+                                            </div>
+                                            <div class="text-primary small px-2">
+                                                <i class="bi bi-arrow-right fs-5"></i>
+                                                <div style="font-size: 0.72rem;">7h 15m</div>
+                                            </div>
+                                            <div>
+                                                <strong class="d-block text-dark">CDG (21:45)</strong>
+                                                <small class="text-muted">Gate 22B</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 text-md-end">
+                                        <a href="{% url 'tours:list' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
+                                            <i class="bi bi-qr-code me-1"></i> E-Ticket
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-wrap justify-content-between align-items-center small text-secondary pt-1">
+                                <span><i class="bi bi-check-circle-fill text-success me-1"></i> Baggage: 2x 23kg Included</span>
+                                <span><i class="bi bi-building text-primary me-1"></i> Hotel: Le Grand Hotel Reserved</span>
+                                <span><i class="bi bi-shield-fill-check text-primary me-1"></i> Travel Shield Active</span>
+                            </div>
+                        </div>
+
+                        <!-- 2. Recent Bookings Table -->
+                        <div class="dash-content-card">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="fw-bold mb-0 text-dark">Recent Orders</h5>
+                                <a href="{% url 'bookings:history' %}" class="btn btn-sm btn-link text-decoration-none fw-semibold p-0">See more</a>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0">
+                                    <thead class="text-muted small border-bottom" style="font-size: 0.82rem;">
+                                        <tr>
+                                            <th>Tracking ID</th>
+                                            <th>Trip / Product Name</th>
+                                            <th>Status</th>
+                                            <th class="text-end">Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for b in recent_bookings %}
+                                            <tr>
+                                                <td class="fw-semibold text-dark small">#{{ b.booking_reference }}</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div class="bg-primary-subtle text-primary p-2 rounded-3 small">
+                                                            <i class="bi bi-compass"></i>
+                                                        </div>
+                                                        <div>
+                                                            <strong class="text-dark d-block small" style="line-height: 1.2;">{{ b.line_items.first.title|default:'Curated Expedition Package' }}</strong>
+                                                            <small class="text-muted" style="font-size: 0.72rem;">{{ b.created_at|date:"M d, Y" }}</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    {% if b.status == 'CONFIRMED' or b.status == 'COMPLETED' %}
+                                                        <span class="badge-status-complete">Complete</span>
+                                                    {% elif b.status == 'PENDING_PAYMENT' %}
+                                                        <span class="badge-status-pending">Pending</span>
+                                                    {% else %}
+                                                        <span class="badge-status-canceled">Canceled</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="text-end fw-bold text-dark small">${{ b.total_amount }}</td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td class="fw-semibold text-dark small">#TS-9812567</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div class="bg-primary-subtle text-primary p-2 rounded-3 small"><i class="bi bi-compass"></i></div>
+                                                        <div>
+                                                            <strong class="text-dark d-block small">Parisian Art & Seine Cruise</strong>
+                                                            <small class="text-muted">Sep 01, 2026</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td><span class="badge-status-complete">Complete</span></td>
+                                                <td class="text-end fw-bold text-dark small">$4,022.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-semibold text-dark small">#TS-9812411</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div class="bg-primary-subtle text-primary p-2 rounded-3 small"><i class="bi bi-building"></i></div>
+                                                        <div>
+                                                            <strong class="text-dark d-block small">Tokyo Tower Grand Suite</strong>
+                                                            <small class="text-muted">Aug 28, 2026</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td><span class="badge-status-pending">Pending</span></td>
+                                                <td class="text-end fw-bold text-dark small">$840.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-semibold text-dark small">#TS-9812619</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div class="bg-primary-subtle text-primary p-2 rounded-3 small"><i class="bi bi-airplane"></i></div>
+                                                        <div>
+                                                            <strong class="text-dark d-block small">Air France JFK-CDG Flight</strong>
+                                                            <small class="text-muted">Aug 24, 2026</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td><span class="badge-status-complete">Complete</span></td>
+                                                <td class="text-end fw-bold text-dark small">$1,290.00</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Voyager Club & Trending Escapes -->
+                    <div class="col-lg-4">
+                        <!-- 1. VIP Voyager Status Card -->
+                        <div class="dash-content-card mb-4" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white;">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <span class="text-primary fw-bold text-uppercase small" style="color: #60a5fa !important; font-size: 0.75rem;">Membership</span>
+                                    <h5 class="fw-bold mb-0 text-white">Platinum Voyager</h5>
+                                </div>
+                                <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold">Tier 1</span>
+                            </div>
+
+                            <p class="text-light-50 small mb-3" style="color: #cbd5e1; font-size: 0.85rem;">
+                                Enjoy complimentary airport lounge access, 10% instant rebate on luxury villas, and 24/7 priority concierge.
+                            </p>
+
+                            <div class="p-3 rounded-3 mb-3" style="background: rgba(255, 255, 255, 0.08);">
+                                <div class="d-flex justify-content-between align-items-center small mb-1">
+                                    <span class="text-light">Points to Diamond:</span>
+                                    <strong class="text-warning">750 pts</strong>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%"></div>
+                                </div>
+                            </div>
+
+                            <a href="{% url 'accounts:profile' %}" class="btn btn-outline-light btn-sm w-100 rounded-pill fw-semibold">
+                                <i class="bi bi-headset me-1"></i> Contact 24/7 Concierge
+                            </a>
+                        </div>
+
+                        <!-- 2. Trending Escapes Showcase -->
+                        <div class="dash-content-card">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold mb-0 text-dark">Trending Escapes For You</h6>
+                                <span class="badge bg-primary-subtle text-primary rounded-pill small">AI Picks</span>
+                            </div>
+
+                            <div class="d-flex flex-column gap-3">
+                                {% for tour in recommended_tours %}
+                                    <a href="{% url 'tours:detail' slug=tour.slug %}" class="text-decoration-none">
+                                        <div class="d-flex align-items-center gap-3 p-2 rounded-3 hover-bg border border-light">
+                                            <div style="width: 60px; height: 60px; border-radius: 12px; overflow: hidden; flex-shrink: 0; background: #cbd5e1;">
+                                                {% if tour.featured_image %}
+                                                    <img src="{{ tour.featured_image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ tour.title }}">
+                                                {% else %}
+                                                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=200&q=80" class="w-100 h-100 object-fit-cover" alt="{{ tour.title }}">
+                                                {% endif %}
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="fw-bold text-dark mb-0 small text-truncate" style="max-width: 170px;">{{ tour.title }}</h6>
+                                                <small class="text-muted d-block">{{ tour.destination.title }} • {{ tour.duration_days }}D</small>
+                                                <strong class="text-primary small">${{ tour.base_price_adult }}</strong>
+                                            </div>
+                                        </div>
+                                    </a>
+                                {% empty %}
+                                    <div class="d-flex align-items-center gap-3 p-2 rounded-3 border border-light">
+                                        <div style="width: 60px; height: 60px; border-radius: 12px; overflow: hidden; flex-shrink: 0;">
+                                            <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=200&q=80" class="w-100 h-100 object-fit-cover" alt="Paris">
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-0 small">Paris & Swiss Alps</h6>
+                                            <small class="text-muted">7 Days • 5-Star Stay</small>
+                                            <strong class="text-primary small d-block">$2,890</strong>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
