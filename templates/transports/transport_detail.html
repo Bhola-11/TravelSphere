@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Schedule Details — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+        <h3 class="fw-bold mb-2">Schedule: {{ schedule.route.route_code }}</h3>
+        <p class="text-muted mb-4">{{ schedule.route.operator.name }} • {{ schedule.departure_time|date:"M d, Y H:i" }}</p>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <h6>Origin Station</h6>
+                <p class="text-dark fw-bold">{{ schedule.route.origin_station.name }} ({{ schedule.route.origin_station.code }})</p>
+            </div>
+            <div class="col-md-6">
+                <h6>Destination Station</h6>
+                <p class="text-dark fw-bold">{{ schedule.route.destination_station.name }} ({{ schedule.route.destination_station.code }})</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

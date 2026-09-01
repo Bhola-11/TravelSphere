@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Luxury Hotels & Resorts — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="bg-dark text-white py-5 position-relative" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+    <div class="container py-4 text-center">
+        <span class="badge bg-primary rounded-pill px-3 py-2 fw-semibold mb-2"><i class="bi bi-building me-1"></i> Global Hospitality</span>
+        <h1 class="display-5 fw-extrabold mb-2">Luxury Hotels & Sanctuaries</h1>
+        <p class="lead text-light-50 mb-0">From 5-star palace hotels in Paris to overwater villas in the Maldives.</p>
+    </div>
+</section>
+
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Filter Sidebar -->
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 100px;">
+                <h5 class="fw-bold mb-3"><i class="bi bi-funnel me-2"></i>Filter Hotels</h5>
+                <form method="get">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Search Query</label>
+                        {{ form.q }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">City</label>
+                        {{ form.city }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Min Star Rating</label>
+                        {{ form.min_stars }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Property Type</label>
+                        {{ form.property_type }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold">Search Hotels</button>
+                    <a href="{% url 'hotels:list' %}" class="btn btn-link text-decoration-none w-100 text-muted small mt-2">Reset</a>
+                </form>
+            </div>
+        </div>
+
+        <!-- Hotels Grid -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold mb-0">Featured Stays</h3>
+                <span class="text-muted small">{{ hotels|length }} luxury properties</span>
+            </div>
+
+            <div class="row g-4">
+                {% for hotel in hotels %}
+                    <div class="col-md-6">
+                        <div class="card card-hover border-0 rounded-4 overflow-hidden shadow-sm h-100 d-flex flex-column">
+                            <div class="position-relative" style="height: 230px; background: #cbd5e1;">
+                                {% if hotel.cover_image %}
+                                    <img src="{{ hotel.cover_image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ hotel.title }}">
+                                {% else %}
+                                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80" class="w-100 h-100 object-fit-cover" alt="{{ hotel.title }}">
+                                {% endif %}
+                                <span class="badge bg-dark bg-opacity-75 text-warning position-absolute top-0 end-0 m-3 rounded-pill px-3 py-1">
+                                    <i class="bi bi-star-fill"></i> {{ hotel.star_rating }} Stars
+                                </span>
+                                <span class="badge bg-primary text-white position-absolute top-0 start-0 m-3 rounded-pill px-3 py-1">
+                                    {{ hotel.get_property_type_display }}
+                                </span>
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column">
+                                <span class="text-primary small fw-semibold"><i class="bi bi-geo-alt me-1"></i>{{ hotel.city.name }}, {{ hotel.city.country.name }}</span>
+                                <h5 class="fw-bold mt-1 mb-2">
+                                    <a href="{% url 'hotels:detail' slug=hotel.slug %}" class="text-dark text-decoration-none">{{ hotel.title }}</a>
+                                </h5>
+                                <p class="text-muted small text-truncate-2 mb-3">{{ hotel.overview }}</p>
+
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    {% for am in hotel.amenities.all|slice:":3" %}
+                                        <span class="badge bg-light text-secondary border small"><i class="bi {{ am.icon_class }} me-1"></i>{{ am.name }}</span>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="text-muted small d-block">Rating: <strong class="text-dark">{{ hotel.rating_average }}★</strong></span>
+                                        <span class="fw-bold text-primary fs-5">Best Rate</span>
+                                    </div>
+                                    <a href="{% url 'hotels:detail' slug=hotel.slug %}" class="btn btn-primary rounded-pill px-4 fw-semibold btn-sm">
+                                        View Rooms <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-building-x text-muted display-4 mb-3 d-block"></i>
+                        <h5 class="fw-bold">No hotels match your search criteria</h5>
+                        <p class="text-muted small">Try broadening your city selection or resetting filters.</p>
+                        <a href="{% url 'hotels:list' %}" class="btn btn-outline-primary rounded-pill px-4">View All Hotels</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

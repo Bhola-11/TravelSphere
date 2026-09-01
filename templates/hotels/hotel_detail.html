@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}{{ hotel.title }} — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="bg-dark text-white py-5 position-relative" style="background: linear-gradient(rgba(15,23,42,0.8), rgba(15,23,42,0.8)), url('{% if hotel.cover_image %}{{ hotel.cover_image.url }}{% else %}https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=80{% endif %}') center/cover no-repeat;">
+    <div class="container py-4">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <span class="badge bg-primary rounded-pill px-3 py-1">{{ hotel.get_property_type_display }}</span>
+            <span class="badge bg-warning text-dark rounded-pill px-3 py-1"><i class="bi bi-star-fill me-1"></i>{{ hotel.star_rating }} Star Luxury</span>
+        </div>
+        <h1 class="display-4 fw-extrabold mb-2">{{ hotel.title }}</h1>
+        <p class="lead text-light mb-0"><i class="bi bi-geo-alt me-1"></i>{{ hotel.address }}, {{ hotel.city.name }}, {{ hotel.city.country.name }}</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <h4 class="fw-bold mb-3">Property Overview</h4>
+            <p class="text-secondary leading-relaxed mb-4">{{ hotel.overview }}</p>
+
+            <h4 class="fw-bold mb-3">Amenities & Services</h4>
+            <div class="row g-3 mb-5">
+                {% for am in amenities_list %}
+                    <div class="col-6 col-md-4">
+                        <div class="d-flex align-items-center gap-2 p-2 bg-white rounded-3 shadow-sm border">
+                            <i class="bi {{ am.icon_class }} text-primary fs-5"></i>
+                            <span class="small fw-semibold text-dark">{{ am.name }}</span>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted small">Standard luxury amenities included.</p>
+                {% endfor %}
+            </div>
+
+            <h4 class="fw-bold mb-4">Available Room Types & Suites</h4>
+            <div class="d-flex flex-column gap-4 mb-5">
+                {% for room in room_types %}
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div class="row g-0">
+                            <div class="col-md-5" style="min-height: 200px; background: #cbd5e1;">
+                                {% if room.image %}
+                                    <img src="{{ room.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ room.name }}">
+                                {% else %}
+                                    <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80" class="w-100 h-100 object-fit-cover" alt="{{ room.name }}">
+                                {% endif %}
+                            </div>
+                            <div class="col-md-7 p-4 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <h5 class="fw-bold text-dark mb-0">{{ room.name }}</h5>
+                                        <span class="badge bg-primary-subtle text-primary">{{ room.get_category_display }}</span>
+                                    </div>
+                                    <p class="text-muted small mb-2"><i class="bi bi-people me-1"></i>Max {{ room.max_adults }} Adults, {{ room.max_children }} Children • <i class="bi bi-arrows-fullscreen me-1"></i>{{ room.room_size_sqm }} m²</p>
+                                    <p class="text-secondary small mb-3">{{ room.description|default:room.bed_type }}</p>
+                                </div>
+
+                                <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="text-muted small d-block">Per Night</span>
+                                        <span class="fs-4 fw-bold text-primary">${{ room.base_price_per_night }}</span>
+                                    </div>
+                                    <form action="{% url 'bookings:add_hotel' pk=room.id %}" method="post" class="d-flex align-items-center gap-2">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="check_in" value="{{ default_checkin }}">
+                                        <input type="hidden" name="check_out" value="{{ default_checkout }}">
+                                        <input type="hidden" name="rooms" value="1">
+                                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold btn-sm">
+                                            <i class="bi bi-cart-plus me-1"></i> Reserve Room
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">Room configurations being updated.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Review Submission Form -->
+            <h4 class="fw-bold mb-3">Guest Reviews</h4>
+            <div class="card border-0 rounded-4 p-4 shadow-sm">
+                <form action="{% url 'reviews:submit_hotel_review' pk=hotel.id %}" method="post">
+                    {% csrf_token %}
+                    <h6 class="fw-bold mb-3">Share Your Stay Experience</h6>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Rating</label>
+                            <select name="rating" class="form-select">
+                                <option value="5">5 - Exceptional</option>
+                                <option value="4">4 - Very Good</option>
+                                <option value="3">3 - Good</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label small fw-semibold">Review Title</label>
+                            <input type="text" name="title" class="form-control" required placeholder="Luxurious stay with impeccable service!">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <textarea name="comment" rows="3" class="form-control" required placeholder="Describe the hospitality, cleanliness, dining, and spa..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 btn-sm fw-bold">Submit Review</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 100px;">
+                <h5 class="fw-bold mb-3">Hotel Policy & Check-In</h5>
+                <ul class="list-unstyled d-flex flex-column gap-3 mb-0 small text-secondary">
+                    <li class="d-flex justify-content-between border-bottom pb-2">
+                        <span>Check-In Time:</span>
+                        <strong class="text-dark">{{ hotel.check_in_time|time:"H:i" }}</strong>
+                    </li>
+                    <li class="d-flex justify-content-between border-bottom pb-2">
+                        <span>Check-Out Time:</span>
+                        <strong class="text-dark">{{ hotel.check_out_time|time:"H:i" }}</strong>
+                    </li>
+                    <li class="border-bottom pb-2">
+                        <span class="d-block mb-1">Cancellation Policy:</span>
+                        <strong class="text-dark d-block">{{ hotel.cancellation_policy }}</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Multi-Modal Flights & Rail — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="bg-dark text-white py-5 position-relative" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);">
+    <div class="container py-4 text-center">
+        <span class="badge bg-primary rounded-pill px-3 py-2 fw-semibold mb-2"><i class="bi bi-airplane me-1"></i> Multi-Modal Transit</span>
+        <h1 class="display-5 fw-extrabold mb-2">Flights, High-Speed Trains & Chauffeurs</h1>
+        <p class="lead text-light-50 mb-0">Search and reserve schedules with live seat availability.</p>
+    </div>
+</section>
+
+<div class="container py-5">
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-5">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">Origin City</label>
+                {{ form.origin_city }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">Destination City</label>
+                {{ form.destination_city }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">Departure Date</label>
+                {{ form.departure_date }}
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold">
+                    <i class="bi bi-search me-2"></i>Find Schedules
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <h4 class="fw-bold mb-4">Available Travel Schedules</h4>
+    <div class="d-flex flex-column gap-3 mb-5">
+        {% for sched in schedules %}
+            <div class="card border-0 shadow-sm rounded-4 p-4 card-hover">
+                <div class="row align-items-center g-3">
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge bg-primary-subtle text-primary">{{ sched.route.operator.get_transport_type_display }}</span>
+                            <span class="fw-bold text-dark">{{ sched.route.operator.name }}</span>
+                        </div>
+                        <span class="text-muted small d-block">Route: <strong>{{ sched.route.route_code }}</strong></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center justify-content-between text-center">
+                            <div>
+                                <h5 class="fw-bold mb-0">{{ sched.departure_time|time:"H:i" }}</h5>
+                                <span class="badge bg-light text-dark border">{{ sched.route.origin_station.code }}</span>
+                            </div>
+                            <div class="text-muted small px-2">
+                                <div><i class="bi bi-arrow-right fs-4 text-primary"></i></div>
+                                <span>{{ sched.route.estimated_duration_minutes }} mins</span>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-0">{{ sched.arrival_time|time:"H:i" }}</h5>
+                                <span class="badge bg-light text-dark border">{{ sched.route.destination_station.code }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 text-center text-md-start">
+                        <span class="text-muted small d-block">Aircraft / Vehicle</span>
+                        <strong class="text-dark small">{{ sched.vehicle_identifier }}</strong>
+                    </div>
+
+                    <div class="col-md-3 text-end">
+                        {% for sc in sched.seat_classes.all %}
+                            <div class="d-flex justify-content-end align-items-center gap-2 mb-1">
+                                <span class="small text-muted">{{ sc.get_class_type_display }}:</span>
+                                <strong class="text-primary">${{ sc.base_price }}</strong>
+                                <form action="{% url 'bookings:add_transport' pk=sched.id %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="seat_class_id" value="{{ sc.id }}">
+                                    <input type="hidden" name="seats_count" value="1">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1">Book</button>
+                                </form>
+                            </div>
+                        {% empty %}
+                            <span class="text-muted small">Economy Seat</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="card border-0 shadow-sm rounded-4 p-5 text-center">
+                <i class="bi bi-airplane-engines text-muted display-4 mb-3"></i>
+                <h5 class="fw-bold">No transport schedules found</h5>
+                <p class="text-muted small">Select your origin and destination city to explore scheduled flights and rail networks.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
